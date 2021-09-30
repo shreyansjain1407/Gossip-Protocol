@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Marcus.Elosegui\\OneDrive - neurotronics.com\\Documents\\Distributed OS\\Project2\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol.fsproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Marcus.Elosegui\\OneDrive - neurotronics.com\\Documents\\Distributed OS\\Project2\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Marcus.Elosegui\\OneDrive - neurotronics.com\\Documents\\Distributed OS\\Project2\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol.fsproj",
+        "projectName": "Gossip-Protocol",
+        "projectPath": "C:\\Users\\Marcus.Elosegui\\OneDrive - neurotronics.com\\Documents\\Distributed OS\\Project2\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol.fsproj",
+        "packagesPath": "C:\\Users\\Marcus.Elosegui\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Marcus.Elosegui\\OneDrive - neurotronics.com\\Documents\\Distributed OS\\Project2\\Gossip-Protocol\\Gossip-Protocol\\Gossip-Protocol\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Marcus.Elosegui\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "dependencies": {
+            "Akka": {
+              "target": "Package",
+              "version": "[1.4.26, )"
+            },
+            "FSharp.Core": {
+              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[5.0.0, )",
+              "generatePathProperty": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
