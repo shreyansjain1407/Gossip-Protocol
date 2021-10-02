@@ -1,41 +1,71 @@
 #time "on"
-#r "nuget: Akka"
+// #r "nuget: Akka"
 #r "nuget: Akka.FSharp"
 #r "nuget: Akka.TestKit"
 
 open System
 open Akka.Actor
-open Akka.Sharp
+open Akka.FSharp
 open Akka.Configuration
+
+type Message = 
+    | Initialization of IActorRef []
+    | Rumor of String //For the gossip algorithm, this is the rumor sent
+    | GossipTerminate of String
+    | PushSumMsg of Double * Double
 
 let stopWatch = System.Diagnostics.Stopwatch()
 
-type Message = 
-    | Init of IActorRef[]
-    | Rumor of String //For the gossip algorithm
-    | PushSum of String//Something
-    | Gossip of String
-
-type ActorX() = 
+//Keeps the count of all actor related things
+type ProcessController() =
     inherit Actor()
-    let mutable msgCount = 0
+    let mutable terminatedNodes = 0
     let mutable start = 0L //This is the starting time
     let mutable totalNodes = 0
 
     override x.OnReceive(receivedMsg) =
         match receivedMsg :?> Message with
-            |Rumor msg ->
+            | GossipTerminate msg ->
                 let curTime = stopWatch.ElapsedMilliseconds //This is the time at which the message was received
-                msgCount <- msgCount + 1 //Incrementing Messages received
-                if msgCount = totalNodes then
+                terminatedNodes <- terminatedNodes + 1 //Incrementing Messages received
+                if terminatedNodes = totalNodes then
                     stopWatch.Stop()
                     printfn "StartTime: %i, FinishTime: %i, Difference: %i" start curTime (curTime - start)
                     Environment.Exit(0)
             
-            |_ -> ()
+            | _ -> ()
 
-type Node(nodeCount: IActorRef, msg: int, nodeNum: int) =
+//This is the main actor that will be transmitting all the "Good Stuff"
+type Node(processController: IActorRef, msg: int, designatedNum: int) =
     inherit Actor()
+    let mutable msgCount = 0
+    let mutable neighbour: IActorRef[] = [||] //This is the array thst contains all the neighbours of the current node
+    let mutable totalNodes = 0
+
+    let mutable s = designatedNum |> float
+    let mutable w = 1.0
+    let mutable rounds = 1
+    let rLimit = 3
+    let tLimit = 10
+
+    override x.OnReceive(nodeMsg) =
+        match nodeMsg :?> Message with
+        |Initialization neighbourArr ->
+            neighbour <- neighbourArr
+        
+        |Rumor str ->
+            //Here the rumor is received by the actor and forwarded
+            msgCount <- msgCount + 1
+            
+            if(msgCount = tLimit) then
+                //Notifying the process controller that an actor has reached it's limit
+                processController <! GossipTerminate()
+                
+
+
+
+        | _ -> ()
+        
     
 //Node count is mutable because it may be changed during the exxecution of the program
 let mutable nodeCount = int (string (fsi.CommandLineArgs.GetValue 1))
@@ -50,16 +80,21 @@ nodeCount =
         int tempx
 
 
-let actorX = system.ActorOf(Props.Create(typeof<ActorX>),"actorX")
+let processController = system.ActorOf(Props.Create(typeof<ProcessController>),"processController")
 //To be removed later
 //https://getakka.net/api/Akka.Actor.ActorSystem.html
 //https://getakka.net/api/Akka.Actor.Props.html
 
 match topology with
 | "full" -> 
-    let actoorArray = Array.zeroCreate( nodeCount + 1)
+    let actorArray = Array.zeroCreate( nodeCount + 1)
+    //Loop to spawn actors
     for i in [0 .. nodeCount] do
-        actoorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, actorX, 10, i+1), )
+        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
+    //Loop to initialize the neighbours of spawned actors in this case all are neighnours
+    for i in [0 .. nodeCount] do
+        actorArray.[i] <- Initialization(actorArray)
+
     if algo = "gossip" then
         //Some stuff here
     else if algo = "pushsum" then
@@ -73,7 +108,7 @@ match topology with
         //More stuff here
 
 
-| "linee" -> 
+| "line" -> 
     if algo = "gossip" then
         //Some stuff here
     else if algo = "pushsum" then
