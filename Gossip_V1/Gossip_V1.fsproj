@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="Program.fs" />
+    <None Include="Gossip_V1_Redo.fsx" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1481,7 +1481,8 @@
         "dependencies": {
           "Akka.FSharp": {
             "target": "Package",
-            "version": "[1.4.26, )"
+            "version": "[1.4.26, )",
+            "generatePathProperty": true
           },
           "FSharp.Core": {
             "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
