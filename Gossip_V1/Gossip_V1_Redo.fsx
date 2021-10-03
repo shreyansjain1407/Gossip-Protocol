@@ -164,10 +164,20 @@ match topology with
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
 
 
+    let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
-        printfn "This is the if block"
-    else
-        printfn "This is the else block"
+        //Whenever an algorithm is started, we shall notify the process controller about
+        //the number of nodes and the start time of the process
+        processController <! SetNodeCount(nodeCount)
+        stopWatch.Start()
+        processController <! SetStart(stopWatch.ElapsedMilliseconds)
+
+        //Initializing the first actor in the chain reaction
+        actorArray.[baseActor] <! Rumor("This is some top secret info, do not disclose")
+    else if algo = "pushsum" then
+        stopWatch.Start()
+        processController <! SetStart(stopWatch.ElapsedMilliseconds)
+        actorArray.[baseActor] <! PushSumInit
     
 | "Line" ->
     let actorArray = Array.zeroCreate( nodeCount + 1)
@@ -177,10 +187,20 @@ match topology with
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
     
     
+    let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
-        printfn "This is the if block"
-    else
-        printfn "This is the else block"
+        //Whenever an algorithm is started, we shall notify the process controller about
+        //the number of nodes and the start time of the process
+        processController <! SetNodeCount(nodeCount)
+        stopWatch.Start()
+        processController <! SetStart(stopWatch.ElapsedMilliseconds)
+
+        //Initializing the first actor in the chain reaction
+        actorArray.[baseActor] <! Rumor("This is some top secret info, do not disclose")
+    else if algo = "pushsum" then
+        stopWatch.Start()
+        processController <! SetStart(stopWatch.ElapsedMilliseconds)
+        actorArray.[baseActor] <! PushSumInit
     
 | "imp2D" ->
     let actorArray = Array.zeroCreate( nodeCount + 1)
@@ -190,9 +210,19 @@ match topology with
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
     
     
+    let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
-        printfn "This is the if block"
-    else
-        printfn "This is the else block"
+        //Whenever an algorithm is started, we shall notify the process controller about
+        //the number of nodes and the start time of the process
+        processController <! SetNodeCount(nodeCount)
+        stopWatch.Start()
+        processController <! SetStart(stopWatch.ElapsedMilliseconds)
+
+        //Initializing the first actor in the chain reaction
+        actorArray.[baseActor] <! Rumor("This is some top secret info, do not disclose")
+    else if algo = "pushsum" then
+        stopWatch.Start()
+        processController <! SetStart(stopWatch.ElapsedMilliseconds)
+        actorArray.[baseActor] <! PushSumInit
         
 | _ -> ()
