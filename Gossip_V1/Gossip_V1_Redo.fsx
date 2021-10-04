@@ -157,12 +157,28 @@ match topology with
         actorArray.[baseActor] <! PushSumInit
 
 | "2D" ->
-    let actorArray = Array.zeroCreate( nodeCount + 1)
+    printfn "2D topology"
+    let gridSide = int (ceil (sqrt (float nodeCount)))
+    printfn "GridSize: %i" gridSide
+    printfn "Number of Nodes: %i" (gridSide*gridSide)
+    let actorArray = Array.zeroCreate(gridSide * gridSide)
     //Loop to spawn actors
-    for i in [0 .. nodeCount] do
-        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
+    for i in [0 .. gridSide * gridSide - 1] do
+        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-
+    for i in [0 .. gridSide - 1] do
+        for j in [0 .. gridSide - 1] do
+            let mutable neighbourArr: IActorRef [] = [||]
+            if i > 0 then
+                neighbourArr <- Array.append neighbourArr[|actorArray.[(i-1) * gridSide + j]|]
+            if j < gridSide - 1 then
+                neighbourArr <- Array.append neighbourArr[|actorArray.[(i * gridSide) + j + 1]|]
+            if i < gridSide - 1 then
+                neighbourArr <- Array.append neighbourArr[|actorArray.[(i+1) * gridSide + j]|]
+            if j > 0 then
+                neighbourArr <- Array.append neighbourArr[|actorArray.[(i * gridSide) + j - 1]|]
+            
+            actorArray.[i*gridSide + 1] <! Initialization(neighbourArr)
 
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
@@ -180,12 +196,20 @@ match topology with
         actorArray.[baseActor] <! PushSumInit
     
 | "Line" ->
+    printfn "Line topology"
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
-        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
+        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-    
+    for i in [0 .. nodeCount] do
+        let mutable neighbourArr: IActorRef [] = [||]
+        if i > 0 then
+            neighbourArr <- Array.append neighbourArr[|actorArray.[i - 1]|]
+        if i < nodeCount - 1 then
+            neighbourArr <- Array.append neighbourArr[|actorArray.[i + 1]|]
+            
+        actorArray.[i] <! Initialization(actorArray)
     
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
@@ -202,11 +226,12 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
     
-| "imp2D" ->
+| "imp3D" ->
+    printfn "Improper 3D topology"
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
-        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
+        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
     
     
