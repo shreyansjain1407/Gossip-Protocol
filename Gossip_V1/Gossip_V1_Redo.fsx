@@ -227,34 +227,29 @@ match topology with
         actorArray.[baseActor] <! PushSumInit
     
 | "imp3D" ->
-    printfn "Improper 3D topology"
-    let gridSide = int (ceil (sqrt (float nodeCount)))
-    printfn "GridSize: %i" gridSide
-    printfn "Number of Nodes: %i" (gridSide*gridSide*gridSide)
-    let actorArray = Array.zeroCreate(gridSide * gridSide * gridSide)
+    let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
-    for i in [0 .. gridSide * gridSide * gridSide - 1] do
+    for i in [0 .. nodeCount] do
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
-    //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-    for i in [0 .. gridSide - 1] do
-        for j in [0 .. gridSide - 1 ] do
-            for k in [0 .. gridSide - 1] do
-                let mutable neighborArr: IActorRef [] = [||]
-                if i > 0 then
-                    neighborArr <- Array.append neighborArr[|actorArray.[(i-1) * gridSide + j]|]
-                if j > 0 then
-                    neighborArr <- Array.append neighborArr[|actorArray.[(i*gridSide) + j - 1]|]
-                if k > 0 then
-                    neighborArr <- Array.append neighborArr[|actorArray.[(i*gridSide) + k - 1]|]
-                if j < gridSide - 1 then
-                    neighborArr <- Array.append neighborArr[|actorArray.[(i * gridSide) + j + 1]|]
-                if i < gridSide - 1 then
-                    neighborArr <- Array.append neighborArr[|actorArray.[(i+1) * gridSide + j]|]
-                if k < gridSide - 1 then
-                    neighborArr <- Array.append neighborArr[|actorArray.[(i * gridSide) + k + 1 ]|]
+    //Loop to initialize the neighbours of spawned actors in this case all are neighnours     
 
-
-    
+    let mutable i = 0
+    while i < nodeCount do
+        let mutable neighborArr: IActorRef [] = [||]
+        for j in [0 .. 5] do
+            if i + j > nodeCount then
+                //do nothing
+                neighborArr <- neighborArr
+            else
+                neighborArr <- Array.append neighborArr[|actorArray.[i+j]|]
+            if i = 0 && j = 5 then
+                neighborArr <- Array.append neighborArr[|actorArray.[i+j+1]|]
+            if j = 5 then
+                i <- i + j
+                if i = 0 then
+                    i <- i + 1
+        actorArray.[i] <! Initialization(neighborArr)
+           
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
         //Whenever an algorithm is started, we shall notify the process controller about
