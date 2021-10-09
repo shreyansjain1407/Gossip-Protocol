@@ -119,7 +119,7 @@ let algo = string (fsi.CommandLineArgs.GetValue 3)
 let tempx = float nodeCount
 let system = ActorSystem.Create("System")
 nodeCount = 
-    if topology = "2D" || topology = "imp2D" then
+    if topology = "3D" || topology = "imp3D" then
         int (floor((tempx ** 0.5) ** 2.0))
     else
         int tempx
@@ -156,8 +156,8 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
 
-| "2D" ->
-    printfn "2D topology"
+| "3D" ->
+    printfn "3D topology"
     let gridSide = int (ceil (sqrt (float nodeCount)))
     printfn "GridSize: %i" gridSide
     printfn "Number of Nodes: %i" (gridSide*gridSide)
@@ -228,12 +228,32 @@ match topology with
     
 | "imp3D" ->
     printfn "Improper 3D topology"
-    let actorArray = Array.zeroCreate( nodeCount + 1)
+    let gridSide = int (ceil (sqrt (float nodeCount)))
+    printfn "GridSize: %i" gridSide
+    printfn "Number of Nodes: %i" (gridSide*gridSide*gridSide)
+    let actorArray = Array.zeroCreate(gridSide * gridSide * gridSide)
     //Loop to spawn actors
-    for i in [0 .. nodeCount] do
+    for i in [0 .. gridSide * gridSide * gridSide - 1] do
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-    
+    for i in [0 .. gridSide - 1] do
+        for j in [0 .. gridSide - 1 ] do
+            for k in [0 .. gridSide - 1] do
+                let mutable neighborArr: IActorRef [] = [||]
+                if i > 0 then
+                    neighborArr <- Array.append neighborArr[|actorArray.[(i-1) * gridSide + j]|]
+                if j > 0 then
+                    neighborArr <- Array.append neighborArr[|actorArray.[(i*gridSide) + j - 1]|]
+                if k > 0 then
+                    neighborArr <- Array.append neighborArr[|actorArray.[(i*gridSide) + k - 1]|]
+                if j < gridSide - 1 then
+                    neighborArr <- Array.append neighborArr[|actorArray.[(i * gridSide) + j + 1]|]
+                if i < gridSide - 1 then
+                    neighborArr <- Array.append neighborArr[|actorArray.[(i+1) * gridSide + j]|]
+                if k < gridSide - 1 then
+                    neighborArr <- Array.append neighborArr[|actorArray.[(i * gridSide) + k + 1 ]|]
+
+
     
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
