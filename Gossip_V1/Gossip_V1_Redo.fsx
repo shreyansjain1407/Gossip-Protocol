@@ -9,7 +9,7 @@ open Akka.FSharp
 open Akka.Configuration
 
 type Message = 
-    | Initialization of IActorRef [] * int
+    | Initialization of IActorRef []
     | SetNodeCount of int
     | SetStart of int64
     | Rumor of String //For the gossip algorithm, this is the rumor sent
@@ -38,8 +38,6 @@ type ProcessController() =
                 let curTime = stopWatch.ElapsedMilliseconds //This is the time at which the message was received
                 terminatedNodes <- terminatedNodes + 1 //Incrementing Messages received
                 currentNodes <- currentNodes - 1
-                let tempSet = Set.empty.Add(node)
-                nodeSet <- Set.difference nodeSet tempSet
                 if terminatedNodes = totalNodes then
                     stopWatch.Stop()
                     printfn "Gossip:\nStartTime: %i, FinishTime: %i, Difference: %i" start curTime (curTime - start)
@@ -67,8 +65,8 @@ type ProcessController() =
                 let newNeighbor = setArray.[rand.Next currentNodes]
                 let loneNode = "akka://system/user/ProcessController" + string node
                 let newNode = "akka://system/user/ProcessController" + string newNeighbor
-
-                //select loneNode system <! AddNeighbor(newNeighbor)
+                //let l = select loneNode system
+                //select loneNode system <! AddNeighbor()
                 select newNode system <! AddNeighbor(node)
             | _ -> ()
 
@@ -89,9 +87,9 @@ type Node(processController: IActorRef, msg: int, designatedNum: int) =
 
     override x.OnReceive(nodeMsg) =
         match nodeMsg :?> Message with
-        |Initialization (neighbourArr, nodeNum) ->
+        |Initialization neighbourArr ->
             neighbour <- neighbourArr
-            node <- nodeNum
+            
         |Rumor str ->
             //Here the rumor is received by the actor and forwarded
             msgCount <- msgCount + 1
@@ -165,7 +163,7 @@ match topology with
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
     for i in [0 .. nodeCount] do
-        actorArray.[i] <! Initialization(actorArray, i)
+        actorArray.[i] <! Initialization(actorArray)
     
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
