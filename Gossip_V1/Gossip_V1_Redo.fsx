@@ -65,8 +65,8 @@ type ProcessController() =
                 let newNeighbor = setArray.[rand.Next currentNodes]
                 let loneNode = "akka://system/user/ProcessController" + string node
                 let newNode = "akka://system/user/ProcessController" + string newNeighbor
-                //let l = select loneNode system
-                //select loneNode system <! AddNeighbor()
+                let lone = select loneNode system
+                select loneNode system <! AddNeighbor(lone.Anchor)
                 select newNode system <! AddNeighbor(node)
             | _ -> ()
 
