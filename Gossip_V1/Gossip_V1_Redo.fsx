@@ -17,6 +17,7 @@ type Message =
     | PushSumInit
     | PushSumMsg of Double * Double
     | PushSumTerminate
+    | DeadNeighborAlert
 
 let stopWatch = System.Diagnostics.Stopwatch()
 
