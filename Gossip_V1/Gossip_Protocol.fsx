@@ -55,7 +55,6 @@ type ProcessController() =
                 let curTime = stopWatch.ElapsedMilliseconds
                 terminatedNodes <- terminatedNodes + 1
                 currentNodes <- currentNodes - 1
-                printfn "Executing"
                 if terminatedNodes = totalNodes then
                     stopWatch.Stop()
                     printfn "PushSum:\n StartTime: %i, FinishTime: %i, Difference: %i" start curTime (curTime - start)

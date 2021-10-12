@@ -41,4 +41,4 @@ We devided the actors into two main parts,
 
     The entire process terminates when all the actors have sent either PushSumTerminate or GossipTerminate message to the process controller. The entire program then terminates with the time being printed out to the terminal.
 
-    Following are the graphs that we found during the execution of the entire program
+    Following are the graphs that we found during the execution of the entire program:
