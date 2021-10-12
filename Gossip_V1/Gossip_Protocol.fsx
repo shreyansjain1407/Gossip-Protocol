@@ -258,7 +258,23 @@ match topology with
     for i in [0 .. nodeCount] do
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-    
+    let mutable i = 0
+    while i < nodeCount do
+        let mutable neighborArr: IActorRef [] = [||]
+        for j in [0 .. 5] do
+            if i + j > nodeCount then
+                //do nothing
+                neighborArr <- neighborArr
+            else
+                neighborArr <- Array.append neighborArr[|actorArray.[i+j]|]
+            if i = 0 && j = 5 then
+                neighborArr <- Array.append neighborArr[|actorArray.[i+j+1]|]
+            if j = 5 then
+                i <- i + j
+                if i = 0 then
+                    i <- i + 1
+        actorArray.[i] <! Initialization(neighborArr)
+
     
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
