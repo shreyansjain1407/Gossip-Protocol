@@ -146,7 +146,7 @@ let algo = string (fsi.CommandLineArgs.GetValue 3)
 let tempx = float nodeCount
 
 nodeCount = 
-    if topology = "2D" || topology = "imp2D" then
+    if topology = "3D" || topology = "imp3D" then
         int (floor((tempx ** 0.5) ** 2.0))
     else
         int tempx
@@ -183,7 +183,7 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
 
-| "2D" ->
+| "DD" ->
     printfn "2D topology"
     let gridSide = int (ceil (sqrt (float nodeCount)))
     printfn "GridSize: %i" gridSide
@@ -251,13 +251,29 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
     
-| "imp2D" ->
+| "imp3D" ->
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-    
+    let mutable i = 0
+    while i < nodeCount do
+        let mutable neighborArr: IActorRef [] = [||]
+        for j in [0 .. 5] do
+            if i + j > nodeCount then
+                //do nothing
+                neighborArr <- neighborArr
+            else
+                neighborArr <- Array.append neighborArr[|actorArray.[i+j]|]
+            if i = 0 && j = 5 then
+                neighborArr <- Array.append neighborArr[|actorArray.[i+j+1]|]
+            if j = 5 then
+                i <- i + j
+                if i = 0 then
+                    i <- i + 1
+        actorArray.[i] <! Initialization(neighborArr)
+
     
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
