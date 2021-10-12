@@ -255,7 +255,7 @@ match topology with
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
-        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
+        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
     let mutable i = 0
     while i < nodeCount do
@@ -291,5 +291,3 @@ match topology with
         actorArray.[baseActor] <! PushSumInit
         
 | _ -> ()
-
-Console.ReadLine() |> ignore
