@@ -55,10 +55,12 @@ type ProcessController() =
                 let curTime = stopWatch.ElapsedMilliseconds
                 terminatedNodes <- terminatedNodes + 1
                 currentNodes <- currentNodes - 1
+                printfn "Executing"
                 if terminatedNodes = totalNodes then
                     stopWatch.Stop()
                     printfn "PushSum:\n StartTime: %i, FinishTime: %i, Difference: %i" start curTime (curTime - start)
                     Environment.Exit(0)
+
             | DeadNeighbors node ->
                 let rand = new Random()
                 let setArray =  Set.toArray nodeSet
@@ -201,7 +203,7 @@ match topology with
                 neighbourArr <- Array.append neighbourArr[|actorArray.[(i+1) * gridSide + j]|]
             if j > 0 then
                 neighbourArr <- Array.append neighbourArr[|actorArray.[(i * gridSide) + j - 1]|]
-            
+            // printfn "%i  Neighbours" neighbourArr.Length
             actorArray.[i*gridSide + 1] <! Initialization(neighbourArr)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
 
@@ -233,7 +235,6 @@ match topology with
             neighbourArr <- Array.append neighbourArr[|actorArray.[i - 1]|]
         if i < nodeCount - 1 then
             neighbourArr <- Array.append neighbourArr[|actorArray.[i + 1]|]
-            
         actorArray.[i] <! Initialization(neighbourArr)
     
     let baseActor = Random().Next(0, nodeCount)
@@ -275,3 +276,5 @@ match topology with
         actorArray.[baseActor] <! PushSumInit
         
 | _ -> ()
+
+Console.ReadLine() |> ignore
