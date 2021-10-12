@@ -39,4 +39,6 @@ We devided the actors into two main parts,
         In case of the pushsum algorithm, instead of sending Rumor messages, the actors send a pushsum message that has the value of (s,w) these messages when received by an actor are added to the current values of s and w of that given actor. This actor then further sends half of this value to a random actor that is contained in the neighbour array of the given actor. Sending half leaves the actor with only half of the value. These messages are constantly and if the difference of the current value and the value presently contained by the actor is not equal to another given value (10 ** -10) in our case for a given number of rounds (3 for the given scenario)
         In that particular case, the actor sends a PushSumTerminate message which once again tells the process controller that this actor has reached the given limit and that all others should continue;
 
-    The entire process terminates when all the actors have sent either PushSumTerminate or GossipTerminate message to the process controller. In
+    The entire process terminates when all the actors have sent either PushSumTerminate or GossipTerminate message to the process controller. The entire program then terminates with the time being printed out to the terminal.
+
+    Following are the graphs that we found during the execution of the entire program
