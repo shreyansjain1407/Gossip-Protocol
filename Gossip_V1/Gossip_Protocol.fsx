@@ -147,7 +147,7 @@ let algo = string (fsi.CommandLineArgs.GetValue 3)
 let tempx = float nodeCount
 
 nodeCount = 
-    if topology = "2D" || topology = "imp2D" then
+    if topology = "3D" || topology = "imp3D" then
         int (floor((tempx ** 0.5) ** 2.0))
     else
         int tempx
@@ -184,8 +184,8 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
 
-| "2D" ->
-    printfn "2D topology"
+| "3D" ->
+    printfn "3D topology"
     let gridSide = int (ceil (sqrt (float nodeCount)))
     printfn "GridSize: %i" gridSide
     printfn "Number of Nodes: %i" (gridSide*gridSide)
@@ -252,7 +252,7 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
     
-| "imp2D" ->
+| "imp3D" ->
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
