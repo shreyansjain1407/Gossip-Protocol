@@ -291,3 +291,5 @@ match topology with
         actorArray.[baseActor] <! PushSumInit
         
 | _ -> ()
+
+Console.ReadLine |> ignore
