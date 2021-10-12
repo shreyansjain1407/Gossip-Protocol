@@ -37,6 +37,7 @@ type ProcessController() =
             | GossipTerminate (msg, node) ->
                 let curTime = stopWatch.ElapsedMilliseconds //This is the time at which the message was received
                 terminatedNodes <- terminatedNodes + 1 //Incrementing Messages received
+                printf "%i" terminatedNodes
                 currentNodes <- currentNodes - 1
                 if terminatedNodes = totalNodes then
                     stopWatch.Stop()
@@ -143,7 +144,7 @@ let algo = string (fsi.CommandLineArgs.GetValue 3)
 let tempx = float nodeCount
 
 nodeCount = 
-    if topology = "2D" || topology = "imp2D" then
+    if topology = "3D" || topology = "imp3D" then
         int (floor((tempx ** 0.5) ** 2.0))
     else
         int tempx
@@ -180,13 +181,14 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
 
-| "2D" ->
+| "3D" ->
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-
+    for i in [0 .. nodeCount] do
+        actorArray.[i] <! Initialization(actorArray)
 
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
@@ -209,7 +211,8 @@ match topology with
     for i in [0 .. nodeCount] do
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-    
+    for i in [0 .. nodeCount] do
+        actorArray.[i] <! Initialization(actorArray)
     
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
@@ -226,13 +229,14 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
     
-| "imp2D" ->
+| "imp3D" ->
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
         actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
-    
+    for i in [0 .. nodeCount] do
+        actorArray.[i] <! Initialization(actorArray)
     
     let baseActor = Random().Next(0, nodeCount)
     if algo = "gossip" then
