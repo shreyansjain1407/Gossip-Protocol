@@ -183,8 +183,8 @@ match topology with
         processController <! SetStart(stopWatch.ElapsedMilliseconds)
         actorArray.[baseActor] <! PushSumInit
 
-| "DD" ->
-    printfn "2D topology"
+| "3D" ->
+    printfn "3D topology"
     let gridSide = int (ceil (sqrt (float nodeCount)))
     printfn "GridSize: %i" gridSide
     printfn "Number of Nodes: %i" (gridSide*gridSide)
@@ -255,7 +255,7 @@ match topology with
     let actorArray = Array.zeroCreate( nodeCount + 1)
     //Loop to spawn actors
     for i in [0 .. nodeCount] do
-        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController")
+        actorArray.[i] <- system.ActorOf(Props.Create(typeof<Node>, processController, 10, i+1), "ProcessController" + string i)
     //Loop to initialize the neighbours of spawned actors in this case all are neighnours
     let mutable i = 0
     while i < nodeCount do
