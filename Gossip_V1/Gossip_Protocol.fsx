@@ -235,21 +235,13 @@ match topology with
         if i < nodeCount - 1 then
             neighbourArr <- Array.append neighbourArr[|actorArray.[i + 1]|]
         actorArray.[i] <! Initialization(neighbourArr)
-    
-    let baseActor = Random().Next(0, nodeCount)
-    if algo = "gossip" then
-        //Whenever an algorithm is started, we shall notify the process controller about
-        //the number of nodes and the start time of the process
-        processController <! SetNodeCount(nodeCount)
-        stopWatch.Start()
-        processController <! SetStart(stopWatch.ElapsedMilliseconds)
 
-        //Initializing the first actor in the chain reaction
-        actorArray.[baseActor] <! Rumor("This is some top secret info, do not disclose")
-    else if algo = "pushsum" then
-        stopWatch.Start()
-        processController <! SetStart(stopWatch.ElapsedMilliseconds)
-        actorArray.[baseActor] <! PushSumInit
+    let mutable neighborArr: IActorRef [] = [||]
+    neighborArr <- Array.append neighborArr[|actorArray.[1]|]
+    actorArray.[0] <! Initialization(neighborArr)
+    let mutable neighborArr': IActorRef [] = [||]
+    neighborArr' <- Array.append neighborArr'[|actorArray.[nodeCount-1]|]
+    actorArray.[nodeCount] <! Initialization(neighborArr)
     
 | "imp3D" ->
     let actorArray = Array.zeroCreate( nodeCount + 1)
@@ -292,4 +284,3 @@ match topology with
         
 | _ -> ()
 
-Console.ReadLine() |> ignore
