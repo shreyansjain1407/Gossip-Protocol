@@ -183,7 +183,7 @@ match topology with
         actorArray.[baseActor] <! PushSumInit
 
 | "2D" ->
-     printfn "2D topology"
+    printfn "2D topology"
     let gridSide = int (ceil (sqrt (float nodeCount)))
     printfn "GridSize: %i" gridSide
     printfn "Number of Nodes: %i" (gridSide*gridSide)
